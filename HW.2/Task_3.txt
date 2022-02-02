@@ -1,0 +1,7 @@
+--STDEV - Возвращает статистическое стандартное отклонение всех значений в указанном выражении.
+SELECT STDEV (TaxRate)
+FROM [Sales].[SalesTaxRate]
+
+--STRING_AGG - Формирование списка имен, разделенного запятыми, без значений NULL
+SELECT STRING_AGG(CONVERT(NVARCHAR(max), ISNULL(FirstName,'N/A')), ',') AS csv 
+FROM Person.Person; 

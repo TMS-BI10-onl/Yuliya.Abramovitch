@@ -1,0 +1,26 @@
+--Task_A
+SELECT COUNT (DISTINCT (PersonType)) AS UniquePersonType
+FROM [Person].[Person]
+WHERE LastName LIKE 'M%' OR EmailPromotion !=1
+
+--Task_B
+SELECT TOP 3 DiscountPct,SpecialOfferID, Description
+FROM [Sales].[SpecialOffer]
+WHERE StartDate BETWEEN '2013-01-01' AND '2014-01-01'
+ORDER BY DiscountPct DESC
+
+--Task_C
+SELECT MIN (Weight) AS MIN_WEIGHT, MAX (Size) AS MAX_SIZE
+FROM [Production].[Product]
+
+--Task_D
+SELECT ProductSubcategoryID, MIN (Weight) AS MinWeight, MAX (Size) AS MaxSize 
+FROM [Production].[Product]
+WHERE ProductSubcategoryID IS NOT NULL AND Weight IS NOT NULL AND Size IS NOT NULL
+GROUP BY ProductSubcategoryID
+
+--Task_E
+SELECT ProductSubcategoryID AS UniqueSubCategory, MIN (Weight) AS MinWeight, MAX (Size) AS MaxSize
+FROM [Production].[Product]
+WHERE Color IS NOT NULL
+GROUP BY ProductSubcategoryID

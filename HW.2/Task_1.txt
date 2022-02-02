@@ -1,0 +1,17 @@
+--Task_A
+SELECT *
+FROM [Sales].[SalesTerritory]
+
+--Task_B
+SELECT TerritoryID, Name
+FROM [Sales].[SalesTerritory]
+
+--Task_C
+SELECT *
+FROM [Person].[Person]
+WHERE LastName ='Norman'
+
+--Task_D
+SELECT *
+FROM [Person].[Person]
+WHERE EmailPromotion!=2
