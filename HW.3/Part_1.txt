@@ -1,0 +1,62 @@
+--2A
+SELECT Name,
+CASE WHEN ListPrice = 0 OR ListPrice IS NULL THEN 'Not For Sale'
+	 WHEN ListPrice > 0 AND ListPrice <100 THEN '<$100'
+	 WHEN ListPrice > 0 AND ListPrice <500 THEN '<$500'
+	 ELSE '>=$500'
+	 END PriceRange
+FROM [Production].[Product]
+
+--2b
+SELECT v.ProductID, pr_v.BusinessEntityID
+FROM Purchasing.ProductVendor v
+JOIN Purchasing.Vendor pr_v
+ON v.BusinessEntityID=pr_v.BusinessEntityID 
+WHERE StandardPrice >10 AND (pr_v.Name LIKE '%x%' OR LEFT (pr_v.Name,1) = 'N')
+
+--2c
+SELECT DISTINCT v.Name
+FROM Purchasing.Vendor v 
+LEFT JOIN Purchasing.ProductVendor pr_v
+ON v.BusinessEntityID=pr_v.BusinessEntityID 
+WHERE pr_v.BusinessEntityID IS NULL
+
+--3a
+SELECT DISTINCT Maker.Name
+FROM Maker
+	JOIN drug 
+	ON Maker.id=drug.MakerID
+	JOIN sales
+	ON drug.id=sales.DrugID
+	JOIN orders
+	ON sales.OrderID=orders.id
+WHERE DATENAME (year, orders.Date) =!2019
+
+--3b
+SELECT drug.Price*2 AS doublePrice
+FROM drug
+	JOIN drug_type
+	ON drug.TypeID=drug_type.id
+WHERE drug_type.id LIKE 'A'
+
+--3c
+SELECT Maker.Name, SUM (drug.packing)
+FROM Maker 
+	JOIN drug
+	ON Maker.id=drug.MakerID
+    JOIN drug_type
+	ON drug.TypeID=drug_type.id
+WHERE drug.TypeID >= 'A'
+GROUP BY Maker.Name
+
+--3d
+SELECT DISTINCT pharmacy_points.Name, drug.Name
+FROM pharmacy_points
+	JOIN sales
+	ON pharmacy_points.ID=sales.PharmacyID_Points
+	JOIN orders
+	ON sales.orderID=orders.ID
+	JOIN drug
+	ON sales.DrugID=drug.id
+WHERE DATENAME (weekday, orders.Date) = 'Saturday'
+GROUP BY pharmacy_points.Name

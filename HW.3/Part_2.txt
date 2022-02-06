@@ -1,0 +1,24 @@
+--1. Найти количество сотрудников, нанятых в 2008 году
+SELECT COUNT(1)
+FROM HumanResources.Employee
+WHERE DATENAME (year, HireDate)=2008
+
+--2. Изменить наименование валюты USD на 840 и произвести округление курса валюты на конец дня до n-знаков после запятой
+SELECT *,(SELECT REPLACE (FromCurrencyCode, 'USD', 840)), ROUND (EndOfDayRate, 2 ) 
+FROM Sales.CurrencyRate
+
+--3. Изменить домен почты
+SELECT SUBSTRING (EmailAddress, LEN(EmailAddress)-2, LEN(EmailAddress)), 
+CASE WHEN EmailAddress LIKE '%.com' THEN REPLACE (EmailAddress, (SUBSTRING (EmailAddress, LEN(EmailAddress)-2, LEN(EmailAddress))), 'ru')
+	 WHEN EmailAddress LIKE '%.net' THEN REPLACE (EmailAddress, (SUBSTRING (EmailAddress, LEN(EmailAddress)-2, LEN(EmailAddress))), 'by')
+END EmailAddress
+FROM Production.ProductReview
+
+--4. Изменить null-значение
+SELECT ProductID, EndDate, ISNULL (null, '---') AS UpdatedEndDate
+FROM [Production].[ProductCostHistory]
+
+--5. Найти сотрудников, у которых день рождения будет в течение недели
+SELECT BusinessEntityID, NationalIDNumber,JobTitle, BirthDate,  PARSE((SELECT REPLACE (BirthDate, LEFT (BirthDate, 4), 2022)) AS date) as EditedDate
+FROM HumanResources.Employee
+WHERE PARSE((SELECT REPLACE (BirthDate, LEFT (BirthDate, 4), 2022)) AS date) BETWEEN (SELECT CONVERT (date, GETDATE())) AND (SELECT CONVERT (date, GETDATE()+7))
