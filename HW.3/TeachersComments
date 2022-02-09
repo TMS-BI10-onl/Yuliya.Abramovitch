@@ -1,0 +1,22 @@
+Well done!
+
+3.
+a) -1
+Correct answer:
+
+SELECT Название
+FROM Фирмы-производители 
+WHERE id NOT IN (SELECT преп.id_фирмы
+				FROM Фармпрепараты преп
+						JOIN Продажи прод ON преп.id=прод.id_фармпрепарата
+						JOIN Кассовые_чеки чек ON прод.id_чека=чек.id 
+				WHERE YEAR(Дата)=2019)
+c) -1
+It was needed to use COUNT, not SUM. Also, filter type>= A is not really correct, 'cause it will filter out numbered types like 1,2,3 and they can appear in our data.
+
+d) -0.5
+Why do we need a group by here? It will cause an error.
+
+Mark: 7-2=5
++1 for task 4
+6
