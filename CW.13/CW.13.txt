@@ -30,6 +30,6 @@ WITH preTable (
 
 SELECT name, Position
 FROM (
-	SELECT name, RANK ()OVER (PARTITION BY name ORDER BY count DESC) as Position
+	SELECT name, RANK ()OVER (ORDER BY count DESC) as Position
 	FROM preTable ) fTable
 WHERE Position BETWEEN 1 AND 5
