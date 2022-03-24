@@ -1,0 +1,95 @@
+--1. Найти ProductSubcategoryID из Production.Product, где мин вес такого ProductSubcategoryID больше 150. 
+SELECT *
+FROM(
+	SELECT ProductSubcategoryID, SUM(Weight) AS SubCatWeight
+	FROM Production.Product
+	GROUP BY ProductSubcategoryID) t
+WHERE SubCatWeight>150
+
+
+
+--2. Найти самый дорогой продукт (поле StandardCost) из Production.Product. (4 способа)
+
+SELECT TOP 1 WITH TIES Name, StandardCost
+FROM Production.Product
+ORDER BY StandardCost DESC
+
+
+
+SELECT Name, StandardCost
+FROM Production.Product
+WHERE StandardCost=
+	(
+	SELECT MAX(StandardCost)AS Position
+	FROM Production.Product)
+	
+	
+
+SELECT *
+FROM 
+	(
+	SELECT Name, StandardCost,  RANK () OVER (ORDER BY StandardCost DESC) AS Position
+	FROM Production.Product) t
+WHERE Position=1
+
+
+
+
+--3. Найти страны, в которые за последний год не было куплено ни одного тура. (схема GROUP2)
+WITH Sales
+AS (
+	SELECT IDSale, IDTour
+	FROM Sales_fct
+	WHERE DataSales >= (YEAR(DataSales)-1)
+)
+SELECT *
+FROM (
+	SELECT s.IDTour, s.Country, COUNT (1) AS TotalCount
+	FROM Sales s FULL JOIN Tours_dim t ON s.IDTour=t.ID
+	GROUP BY s.IDTour, s.Country
+	)
+WHERE TotalCount =0
+
+
+
+
+--4. Найти для каждого менеджера кол-во продаж за последние 15 лет.  (схема GROUP2)
+WITH Sales
+AS (
+	SELECT IDSale, IDManager
+	FROM Sales_fct
+	WHERE YEAR(DataSales) >= (YEAR(DataSales)-15)
+)
+SELECT s.IDManager, m.FirstName, m.LastName, Count (1)
+FROM Sales s JOIN ON Managers_dim m ON s.IDManager=m.IDManager
+GROUP BY s.IDManager, m.FirstName, m.LastName
+
+
+--5. 
+Users (
+    id bigint NOT NULL,
+    email varchar(255) NOT NULL
+);
+
+Notifications (
+    id bigint NOT NULL,
+    user_id bigint NOT NULL,
+    category varchar(100),
+    is_read boolean DEFAULT false
+);
+
+Найти список категорий для пользователя alex@gmail.com, в которых более 50 непрочитанных нотификаций
+
+WITH NotifTable
+AS(
+	SELECT n.id, category
+	FROM Users u FULL JOIN Notifications n ON u.id=n.user_id
+	WHERE u.email ='alex@gmail.com' AND n.is_read='true'
+	)
+SELECT category
+FROM ( SELECT n.id, category COUNT (category) AS C
+       FROM NotifTable
+	   GROUP BY n.id, category) tbl
+WHERE C>50
+	   
+	   
