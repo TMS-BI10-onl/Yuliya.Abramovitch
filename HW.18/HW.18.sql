@@ -1,0 +1,49 @@
+﻿--1. Покажите всех менеджеров, которые имеют в подчинении больше 6-ти сотрудников. 
+SELECT FIRST_NAME, LAST_NAME
+FROM EMPLOYEES emp RIGHT JOIN ( 
+	SELECT MANAGER_ID, COUNT (EMPLOYEE_ID) AS COUNT_EMP
+	FROM EMPLOYEES
+	GROUP BY MANAGER_ID
+	HAVING COUNT (EMPLOYEE_ID)>6 
+) tbl ON emp.EMPLOYEE_ID=tbl.MANAGER_ID
+
+--2. Вывести min и max зарплату с вычетом commission_pct для каждого департамента. (commission_pct на базе указывается в процентах). 
+SELECT dep.DEPARTMENT_NAME, tbl.MinSalary, tbl.MaxSalary 
+FROM (
+	SELECT DEPARTMENT_ID, MIN(SALARY*(100 - COMISSION_PCT)/100) AS MinSalary, MAX(SALARY*(100 - COMISSION_PCT)/100) AS MaxSalary
+	FROM EMPLOYEES
+	GROUP BY DEPARTMENT_ID
+	) tbl JOIN DEPARTMENTS dep ON tbl.DEPARTMENT_ID=dep.DEPARTMENT_ID
+
+--3.Вывести только регион, где работают больше всего людей.
+SELECT TOP 1 WITH TIES REGION_NAME
+FROM (
+	SELECT reg.REGION_NAME, COUNT (emp.EMPLOYEE_ID) AS CNT
+	FROM EMPLOYEES emp 
+				   JOIN DEPARTMENTS dep ON emp.DEPARTMENT_ID=dep.DEPARTMENT_ID
+				   JOIN LOCATIONS loc ON dep.LOCATIONS_ID=loc.LOCATIONS_ID
+				   JOIN COUNTRIES coun ON loc.COUNTRY_ID=coun.COUNTRY_ID
+				   JOIN REGIONS reg ON coun.REGION_ID=reg.REGION_ID
+	GROUP BY reg.REGION_NAME
+	) tbl
+ORDER BY CNT 
+
+--4. Найдите разницу в процентах между средней зп по каждому департаменту от общей средней (по всем департаментам).
+SELECT DEPARTMENT_NAME, ROUND ((DEP_AVG_SALARY/FIRM_AVG_SALARY)*100,2) AS DIFFERENT
+FROM (
+		SELECT DEPARTMENT_ID, AVG (SALARY) OVER () AS FIRM_AVG_SALARY, AVG (SALARY) OVER (PARTITION BY DEPARTMENT_ID) AS DEP_AVG_SALARY
+		FROM EMPLOYEES emp JOIN DEPARTMENTS dep ON emp.DEPARTMENT_ID=dep.DEPARTMENT_ID 
+	  ) tbl
+
+--5. Найдите людей, кто проработал больше, чем 10 лет в одном департаменте. 
+SELECT DISTINCT CONCAT(emp.FIRST_NAME, ' ', emp.LAST_NAME) AS FULL_NAME, DATEDIFF(YEAR, START_DATE, END_DATE) AS DIFFER
+FROM JOB_HISTORY jh JOIN EMPLOYEES emp ON jh.EMPLOYEE_ID=emp.EMPLOYEE_ID
+WHERE DATEDIFF(YEAR,  START_DATE, END_DATE)>10 OR DATEDIFF(YEAR,  START_DATE, GETDATE())>10
+
+--6. Найдите людей, кто занимает 5-10 место по размеру зарплаты.  
+SELECT CONCAT (FIRST_NAME, ' ' , LAST_NAME) AS FullName
+FROM (
+		SELECT FIRST_NAME, LAST_NAME, RANK() OVER (FIRST_NAME, LAST_NAME ORDER BY SALARY DESC) AS Place
+		FROM EMPLOYEES
+		) tbl
+WHERE Place BETWEEN 5 AND 10
