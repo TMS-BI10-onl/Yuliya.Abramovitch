@@ -1,0 +1,26 @@
+Well done!
+
+1. -0.75
+Why do we need a subquery?
+
+2. -1
+SAME - subquery.
+
+3. -0.5
+No need in the subquery. Count() can be used in the order by.
+
+4. -0.5
+Can be done in one query.
+
+5. 
+Where clause can be wrote easier: WHERE DATEDIFF(year, start_date, ISNULL(end_date, GETDATE()))>10
+
+Mark: 7
+
+Test notes:
+KPI font is a bit too large.
+Count of movies - null values is not filtered out. 
+Titles of bar chart and pie chart are not corresponting in style.
+
+Test mark: 9
+
