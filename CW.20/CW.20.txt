@@ -1,0 +1,39 @@
+1. Вариант 2
+
+2. Вывод таблицы Employees без изменений
+
+3. 1|1
+   2|2
+   
+4. 1|1
+   2|2
+   4|NULL
+   NULL|NULL
+   NULL|NULL
+   
+5.1 120
+
+5.2 Запрос 2 вернёт количество уникальных значений, без NULL. Запрос 1 вернёт в т.ч.NULL.
+
+6. Многие ко многим
+
+7. Многие ко многим
+
+8. БД во второй нормальной форме
+
+9. AAA
+   1AB
+   
+10. 1. John Doe
+    4. Bobby Louis
+	5. Lisa Romero
+	
+11. SELECT SUM (X)
+    FROM table
+	WHERE x>0 OR x IN 
+		(
+		SELECT x
+		FROM table
+		WHERE x%5=0
+		)
+	
